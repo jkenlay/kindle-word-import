@@ -6,6 +6,7 @@ let fs = require('fs');
 var pdf2img = require('pdf2img');
 let PDFDocument = require('pdfkit');
 var path = require('path');
+var exec2 = require('child_process').exec;
 
 let allWords = [];
 // TO DO
@@ -49,24 +50,30 @@ function convertWordsIntoPages(){
                     });
                 });
                 }
-                console.log('word adding');
             });
-            console.log('here');
+            console.log('Done converting to PDF');
             doc.end();
-            resolve();
+            setTimeout(()=>{
+                resolve();
+            },2000);
         });
     }
 }
+
+//TO DO add timer for this because it takes fucking years
+//TO DO Change to something else iwth live output
+// ~/Dropbox/Backgrounds/Words
 function turnPDFintoImage(){
     return ()=>{
         return new Promise((resolve,reject)=>{
-            exec('convert -monitor -density 300 definitions.pdf -quality 100 test.jpg', function(err, out, code) {
+            console.log('Attempting to convert to images and paste into DropBox.');
+            exec('convert -monitor -density 300 definitions.pdf -quality 100 ~/Dropbox/Backgrounds/Words/word.jpg', function(err, out, code) {
                 if (err instanceof Error){
                     process.stderr.write('Error:' + err);
                     throw err;
                 }
-                process.stdout.write(out);
-                console.log('Copied From DB;');
+                process.stdout.write('out'+ out);
+                console.log('Converted to images');
                 resolve();
             });
         });
@@ -89,6 +96,7 @@ function getWordDefinitions(inputWord) {
                     });
                 }
                 allWords.push(wordDefinitions);
+                console.log('Got word definitions');
                 return resolve();
             });
         });
@@ -128,7 +136,7 @@ function copyFromKindle(){
                 throw err;
             }
             process.stdout.write(out);
-            console.log('Copied From DB;');
+            console.log('Copied words from Kindle');
             resolve();
         });
     });
@@ -147,22 +155,5 @@ function getWordsFromDB() {
         });
     });
 }
-
-function createImage(){
-    var fnt = PImage.registerFont('SourceSansPro-Regular.ttf','Source Sans Pro');
-    fnt.load(function() {
-        var img = PImage.make(200,200);
-        var ctx = img.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.font = "48pt 'Source Sans Pro'";
-        ctx.fillText("ABC", 80, 80);
-            PImage.encodePNGToStream(img, fs.createWriteStream('out.png')).then(()=> {
-            console.log("wrote out the png file to out.png");
-        }).catch((e)=>{
-            console.log("there was an error writing");
-        });
-    });
-}
-
 
 start();
