@@ -96,7 +96,6 @@ function getWordDefinitions(inputWord) {
                     });
                 }
                 allWords.push(wordDefinitions);
-                console.log('Got word definitions');
                 return resolve();
             });
         });
